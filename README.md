@@ -1,17 +1,92 @@
 # DCS-Weather-Presetter
 
-A script for DCS (Digital Combat Simulator) that takes a mission (`.miz`) file and produces new versions of it with different weather and date settings, one output file per preset defined in `config.yaml`.
+A toolset for modifying DCS (Digital Combat Simulator) mission files (`.miz`) to apply custom weather, date, and time settings. Available in three forms:
 
-## Usage
+- **Python script** — batch-process a mission against multiple presets defined in `config.yaml`
+- **Web app** — browser-based editor hosted on GitHub Pages, no installation needed
+- **HTTP API** — Cloudflare Worker endpoint for programmatic use
 
+---
+
+## Web App
+
+**URL:** https://m1ndgames.github.io/DCS-Weather-Presetter/
+
+1. Click **Choose .miz file** and upload your mission
+2. All current weather values are pre-filled from the mission
+3. Edit any fields (date, time, clouds, wind, atmosphere)
+4. Optionally click **⛅ Use current weather** to auto-fill with live real-world weather for the mission's theatre (fetched from Open-Meteo — no account needed)
+5. Click **Download modified mission** — the new `.miz` is generated in your browser and downloaded instantly
+
+Nothing is uploaded to any server. The entire conversion runs client-side.
+
+---
+
+## HTTP API
+
+**Base URL:** `https://dcs-weather-presetter.<subdomain>.workers.dev`
+
+### `POST /convert`
+
+Converts a mission file using a preset supplied as JSON.
+
+**Request:** `multipart/form-data`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `mission` | file | The source `.miz` file |
+| `preset` | string (JSON) | Preset configuration (see format below) |
+
+**Response:** The converted `.miz` file as a download (`application/octet-stream`).
+
+**Example — manual preset:**
 ```bash
-python main.py path/to/your_mission.miz
-python main.py path/to/your_mission.miz --config path/to/config.yaml
+curl -X POST https://dcs-weather-presetter.<subdomain>.workers.dev/convert \
+  -F "mission=@my_mission.miz" \
+  -F 'preset={
+    "suffix": "summer_morning",
+    "date": {"year": 2000, "month": 7, "day": 15},
+    "time": {"hour": 8, "minute": 0},
+    "weather": {
+      "name": "Summer, clear sky",
+      "qnh": 760,
+      "atmosphere_type": 0,
+      "type_weather": 0,
+      "groundTurbulence": 0,
+      "modifiedTime": false,
+      "enable_fog": false,
+      "enable_dust": false,
+      "dust_density": 0,
+      "season": {"temperature": 28},
+      "visibility": {"distance": 80000},
+      "fog": {"visibility": 0, "thickness": 0},
+      "wind": {
+        "atGround": {"speed": 2, "dir": 270},
+        "at2000":   {"speed": 4, "dir": 270},
+        "at8000":   {"speed": 6, "dir": 270}
+      },
+      "clouds": {"preset": "Preset1", "base": 3000, "density": 0, "thickness": 200, "iprecptns": 0},
+      "halo": {"preset": "auto"}
+    }
+  }' \
+  --output result.miz
 ```
 
-Output files are saved next to the source file, named `<mission>_<suffix>.miz`.
+**Example — real-world weather** (theatre is read from the mission automatically):
+```bash
+curl -X POST https://dcs-weather-presetter.<subdomain>.workers.dev/convert \
+  -F "mission=@my_mission.miz" \
+  -F 'preset={"suffix": "real_weather", "real_weather": true}' \
+  --output result.miz
+```
 
-## Installation
+**Error responses** are JSON: `{"error": "description"}`.
+
+---
+
+## Python Script
+
+### Installation
 
 Requires Python 3.7+.
 
@@ -28,9 +103,21 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Configuration
+### Usage
 
-Presets are defined in `config.yaml`. Each preset produces one output `.miz` file.
+```bash
+# Apply all presets from config.yaml to a mission file
+python main.py path/to/your_mission.miz
+
+# Use a custom config file
+python main.py path/to/your_mission.miz --config path/to/config.yaml
+```
+
+One output file is created per preset, saved next to the source file as `<mission>_<suffix>.miz`.
+
+### Configuration
+
+Presets are defined in `config.yaml`.
 
 ```yaml
 presets:
@@ -55,7 +142,7 @@ presets:
       modifiedTime: false        # Whether DCS has auto-modified the time
       qnh: 760                   # Barometric pressure (mmHg)
       enable_fog: false          # Toggle fog
-      enable_dust: false         # Toggle dust/sand storm
+      enable_dust: false         # Toggle dust/sandstorm
       dust_density: 0            # Dust density (only relevant if enable_dust: true)
 
       season:
@@ -90,13 +177,42 @@ presets:
         preset: "auto"           # Halo/atmospheric effect preset
 ```
 
-### Cloud presets
+#### Real-world weather preset
 
-DCS uses named cloud presets. The preset name must match exactly what DCS expects. Common values:
+Setting `real_weather: true` fetches current weather from [Open-Meteo](https://open-meteo.com) (free, no API key) and fills all weather, date, and time fields automatically. The theatre is read from the mission file — no coordinates to configure.
 
-| Preset                          | Description               |
-|---------------------------------|---------------------------|
-| `Preset1` – `Preset12`          | Clear to scattered clouds |
-| `RainyPreset1` – `RainyPreset3` | Overcast with rain        |
+```yaml
+presets:
+  - name: "Real Weather"
+    suffix: "real_weather"
+    real_weather: true
+```
 
-The full list of available presets depends on your DCS version and installed theatre. An invalid preset name will cause DCS to fall back to default clouds.
+#### Cloud presets
+
+| Preset | Description |
+|--------|-------------|
+| `Preset1` – `Preset12` | Clear to scattered clouds |
+| `Preset13` – `Preset20` | Broken clouds |
+| `Preset21` – `Preset27` | Overcast |
+| `RainyPreset1` – `RainyPreset3` | Overcast with rain |
+| `RainyPreset4` – `RainyPreset6` | Light rain |
+| `NEWRAINPRESET4` | Light rain 4 |
+
+#### Supported theatres (for real-world weather)
+
+| Theatre key | Location |
+|-------------|----------|
+| `GermanyCW` | Germany, Central/West |
+| `Caucasus` | Georgia / Russia border |
+| `PersianGulf` | UAE / Oman |
+| `Nevada` | Nevada (NTTR) |
+| `Normandy` | Normandy, France |
+| `TheChannel` | English Channel |
+| `Syria` | Syria / Lebanon |
+| `MarianaIslands` | Guam |
+| `SouthAtlantic` | Falkland Islands |
+| `Sinai` | Sinai Peninsula |
+| `Afghanistan` | Afghanistan |
+| `Iraq` | Iraq |
+| `Kola` | Kola Peninsula |

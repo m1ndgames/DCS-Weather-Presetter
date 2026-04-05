@@ -4,31 +4,68 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-DCS-Weather-Presetter takes a DCS (Digital Combat Simulator) mission file (`.miz`) as input and saves new versions with different weather and date/season parameters next to the original. Seasons and presets are configured via `config.yaml`.
+DCS-Weather-Presetter modifies DCS mission files (`.miz`) to apply custom weather, date, and time settings. It ships as three independent tools that share core JS logic:
 
-## Running
+| Component | Entry point | Hosting |
+|-----------|-------------|---------|
+| Python script | `main.py` | Local |
+| Web app | `webapp/` → builds to `docs/` | GitHub Pages |
+| HTTP API | `worker/` | Cloudflare Workers |
+
+## Python Script
 
 ```bash
-# Apply all presets from config.yaml to a mission file
-.venv/Scripts/python.exe main.py path/to/mission.miz
-
-# Use a custom config
-.venv/Scripts/python.exe main.py path/to/mission.miz --config my_config.yaml
-
-# Install dependencies
+# Install (Windows venv)
 .venv/Scripts/pip.exe install -r requirements.txt
+
+# Run
+.venv/Scripts/python.exe main.py path/to/mission.miz
+.venv/Scripts/python.exe main.py path/to/mission.miz --config my_config.yaml
 ```
 
-Output files are written next to the source `.miz`, named `<stem>_<suffix>.miz` per preset.
+`main.py` flow: parse `config.yaml` → read `.miz` (ZIP) → for each preset, apply → write new `.miz`.
+
+If a preset has `real_weather: true`, the theatre is read from the mission Lua and current weather is fetched from Open-Meteo before applying.
+
+## Web App
+
+```bash
+cd webapp
+npm install
+npm run dev       # dev server
+npm run build     # builds to ../docs/
+```
+
+Vite + Svelte. `base` is set to `/DCS-Weather-Presetter/` for GitHub Pages. Build output goes to `docs/` (served by GitHub Pages from the `main` branch). The `.nojekyll` file lives in `webapp/public/` so it survives clean builds.
+
+## Cloudflare Worker
+
+```bash
+cd worker
+npm install
+npx wrangler login   # one-time browser auth
+npm run deploy       # deploys to *.workers.dev
+```
+
+`POST /convert` — multipart form data with `mission` (file) and `preset` (JSON string). Returns the converted `.miz`. Imports `mission.js` and `realWeather.js` directly from `../webapp/src/lib/`.
 
 ## Architecture
 
-`main.py` is the single entry point. Flow: parse `config.yaml` → read source `.miz` (a ZIP) → for each preset, regex-replace the `["date"]`, `["weather"]`, and `["start_time"]` fields in the `mission` Lua file → write a new `.miz` ZIP.
+### Shared JS logic (`webapp/src/lib/`)
 
-- `build_date_block()` / `build_weather_block()` regenerate their entire Lua blocks from scratch. Replacement targets blocks delimited by `-- end of ["date"]` / `-- end of ["weather"]` comments, which DCS serialization always emits.
-- `start_time` (seconds since midnight) is a simple scalar replaced with a single-tab-anchored regex (`^\t\["start_time"\]`) to avoid touching the identically named per-unit fields nested deeper in the file.
-- The `time` key in a preset is optional; omitting it leaves the source mission's time unchanged.
+These modules are used by both the webapp and the worker:
+
+- **`mission.js`** — `parseMission()`, `parseTheatre()`, `applyPreset()`. Parses/writes the DCS Lua format using regex on the `-- end of ["key"]` block terminators. `start_time` replacement uses a single-tab-anchored regex to avoid touching per-unit `start_time` fields nested deeper in the file.
+- **`realWeather.js`** — `fetchRealWeather(lat, lon)`. Calls Open-Meteo (no API key), maps cloud cover % and WMO weather codes to DCS presets, converts hPa → mmHg for QNH, uses 850 hPa / 300 hPa wind levels for 2000 m / 8000 m wind.
+- **`cloudPresets.js`** — static list of all 34 DCS cloud preset names and labels (sourced from `DCS/Config/Effects/clouds.lua`).
+
+### Python (`main.py`)
+
+Duplicates the mapping logic from `realWeather.js` (Python can't import JS). The `THEATRE_COORDS` dict and all weather-mapping functions mirror the JS equivalents exactly.
 
 ## DCS Mission File Format
 
-`.miz` files are ZIP archives. The `mission` entry is UTF-8 Lua-table-literal serialization (DCS-specific, not runnable Lua). Indentation uses tabs; opening braces sit at the same tab level as their key, not indented further. The `-- end of ["key"]` comments are reliable block terminators used for regex boundaries.
+`.miz` files are ZIP archives. The `mission` entry is UTF-8 Lua-table-literal serialization (DCS-specific, not runnable Lua). Key properties:
+- Indentation uses tabs; opening braces are at the **same** tab level as their key
+- `-- end of ["key"]` comments terminate every table block — used as reliable regex boundaries
+- `["start_time"]` at one-tab indent is the mission start time in seconds since midnight; identically named fields nested deeper belong to individual units and must not be touched
