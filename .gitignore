@@ -209,3 +209,6 @@ __marimo__/
 # Project
 test_mission.miz
 tmp
+test_mission_*.miz
+webapp/node_modules
+!webapp/src/lib/
