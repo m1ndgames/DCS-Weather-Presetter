@@ -1,0 +1,15 @@
+{
+  "name": "dcs-weather-presetter-worker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.80.0"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
+  }
+}

@@ -212,3 +212,5 @@ tmp
 test_mission_*.miz
 webapp/node_modules
 !webapp/src/lib/
+worker/node_modules
+worker/dist
