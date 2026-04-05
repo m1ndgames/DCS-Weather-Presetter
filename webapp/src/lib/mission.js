@@ -24,6 +24,10 @@ function extractBlock(content, key) {
   return content.slice(start, end + endMarker.length)
 }
 
+export function parseTheatre(luaText) {
+  return readScalar(luaText, 'theatre')
+}
+
 export function parseMission(luaText) {
   const dateBlock = extractBlock(luaText, 'date')
   const weatherBlock = extractBlock(luaText, 'weather')

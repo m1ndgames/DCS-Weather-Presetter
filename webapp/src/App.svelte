@@ -1,12 +1,15 @@
 <script>
   import JSZip from 'jszip'
-  import { parseMission, applyPreset } from './lib/mission.js'
+  import { parseMission, parseTheatre, applyPreset } from './lib/mission.js'
   import { CLOUD_PRESETS } from './lib/cloudPresets.js'
+  import { fetchRealWeather, THEATRE_COORDS } from './lib/realWeather.js'
 
   let fileName = ''
   let originalZip = null
   let preset = null
+  let theatre = null
   let error = ''
+  let loadingWeather = false
 
   async function onFileChange(e) {
     error = ''
@@ -18,9 +21,29 @@
       originalZip = await JSZip.loadAsync(buf)
       const luaText = await originalZip.file('mission').async('string')
       preset = parseMission(luaText)
+      theatre = parseTheatre(luaText)
     } catch (err) {
       error = 'Could not read mission file: ' + err.message
       preset = null
+      theatre = null
+    }
+  }
+
+  async function applyRealWeather() {
+    const coords = THEATRE_COORDS[theatre]
+    if (!coords) {
+      error = `No coordinates found for theatre "${theatre}".`
+      return
+    }
+    loadingWeather = true
+    error = ''
+    try {
+      const realPreset = await fetchRealWeather(coords.lat, coords.lon)
+      preset = realPreset
+    } catch (err) {
+      error = 'Failed to fetch weather: ' + err.message
+    } finally {
+      loadingWeather = false
     }
   }
 
@@ -74,6 +97,24 @@
       {/if}
       <input type="file" accept=".miz" on:change={onFileChange} />
     </label>
+
+    {#if theatre}
+      <button
+        type="button"
+        class="btn-realweather"
+        on:click={applyRealWeather}
+        disabled={loadingWeather}
+      >
+        {#if loadingWeather}
+          Fetching…
+        {:else}
+          ⛅ Use current weather
+          {#if THEATRE_COORDS[theatre]}
+            <span class="theatre-hint">({THEATRE_COORDS[theatre].name})</span>
+          {/if}
+        {/if}
+      </button>
+    {/if}
   </section>
 
   {#if error}
@@ -202,7 +243,13 @@
   header p { color: #8b949e; margin-top: .3rem; }
 
   /* Upload */
-  .upload-zone { margin-bottom: 1.5rem; }
+  .upload-zone {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: 1.5rem;
+  }
   .upload-btn {
     display: inline-flex;
     align-items: center;
@@ -218,6 +265,24 @@
   .upload-btn:hover { border-color: #58a6ff; color: #58a6ff; }
   .upload-btn input { display: none; }
   .icon { font-size: 1.1rem; }
+
+  .btn-realweather {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .6rem 1.1rem;
+    background: #1c2d3a;
+    border: 1px solid #2d6a8f;
+    border-radius: 8px;
+    color: #79c0ff;
+    font-size: .9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .btn-realweather:hover:not(:disabled) { background: #1f3a4f; border-color: #58a6ff; }
+  .btn-realweather:disabled { opacity: .6; cursor: not-allowed; }
+  .theatre-hint { color: #8b949e; font-size: .8rem; font-weight: 400; }
 
   .error { color: #f85149; margin-bottom: 1rem; font-size: .9rem; }
 

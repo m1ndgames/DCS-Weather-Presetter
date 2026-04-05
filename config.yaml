@@ -88,3 +88,9 @@ presets:
         iprecptns: 1
       halo:
         preset: "auto"
+
+  - name: "Real Weather"
+    suffix: "real_weather"
+    real_weather: true
+    # Theatre and all weather/date/time values are fetched automatically from Open-Meteo.
+    # The theatre is read from the mission file itself — no manual configuration needed.
