@@ -24,7 +24,7 @@ Nothing is uploaded to any server. The entire conversion runs client-side.
 
 ## HTTP API
 
-**Base URL:** `https://dcs-weather-presetter.<subdomain>.workers.dev`
+**Base URL:** `https://dcs-weather-presetter.dcs-weather.workers.dev`
 
 ### `POST /convert`
 
@@ -41,7 +41,7 @@ Converts a mission file using a preset supplied as JSON.
 
 **Example — manual preset:**
 ```bash
-curl -X POST https://dcs-weather-presetter.<subdomain>.workers.dev/convert \
+curl -X POST https://dcs-weather-presetter.dcs-weather.workers.dev/convert \
   -F "mission=@my_mission.miz" \
   -F 'preset={
     "suffix": "summer_morning",
@@ -74,7 +74,7 @@ curl -X POST https://dcs-weather-presetter.<subdomain>.workers.dev/convert \
 
 **Example — real-world weather** (theatre is read from the mission automatically):
 ```bash
-curl -X POST https://dcs-weather-presetter.<subdomain>.workers.dev/convert \
+curl -X POST https://dcs-weather-presetter.dcs-weather.workers.dev/convert \
   -F "mission=@my_mission.miz" \
   -F 'preset={"suffix": "real_weather", "real_weather": true}' \
   --output result.miz
