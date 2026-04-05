@@ -1,12 +1,103 @@
 presets:
-  - name: "Summer Morning"
-    suffix: "summer_morning"
+
+  - name: "Spring Day"
+    suffix: "spring_day"
+    date:
+      year: 2000
+      month: 4
+      day: 15
+    time:
+      hour: 10
+      minute: 0
+    weather:
+      name: "Spring, scattered clouds"
+      atmosphere_type: 0
+      groundTurbulence: 0
+      modifiedTime: false
+      type_weather: 0
+      qnh: 755
+      enable_fog: false
+      enable_dust: false
+      dust_density: 0
+      season:
+        temperature: 14
+      fog:
+        visibility: 0
+        thickness: 0
+      visibility:
+        distance: 70000
+      wind:
+        atGround:
+          speed: 4
+          dir: 250
+        at2000:
+          speed: 7
+          dir: 250
+        at8000:
+          speed: 14
+          dir: 260
+      clouds:
+        preset: "Preset7"
+        base: 2000
+        density: 3
+        thickness: 300
+        iprecptns: 0
+      halo:
+        preset: "auto"
+
+  - name: "Spring Night"
+    suffix: "spring_night"
+    date:
+      year: 2000
+      month: 4
+      day: 15
+    time:
+      hour: 23
+      minute: 0
+    weather:
+      name: "Spring, clear night"
+      atmosphere_type: 0
+      groundTurbulence: 0
+      modifiedTime: false
+      type_weather: 0
+      qnh: 757
+      enable_fog: false
+      enable_dust: false
+      dust_density: 0
+      season:
+        temperature: 8
+      fog:
+        visibility: 0
+        thickness: 0
+      visibility:
+        distance: 80000
+      wind:
+        atGround:
+          speed: 3
+          dir: 250
+        at2000:
+          speed: 6
+          dir: 255
+        at8000:
+          speed: 12
+          dir: 260
+      clouds:
+        preset: "Preset2"
+        base: 2500
+        density: 0
+        thickness: 200
+        iprecptns: 0
+      halo:
+        preset: "auto"
+
+  - name: "Summer Day"
+    suffix: "summer_day"
     date:
       year: 2000
       month: 7
       day: 15
     time:
-      hour: 8
+      hour: 12
       minute: 0
     weather:
       name: "Summer, clear sky"
@@ -14,7 +105,7 @@ presets:
       groundTurbulence: 0
       modifiedTime: false
       type_weather: 0
-      qnh: 760
+      qnh: 762
       enable_fog: false
       enable_dust: false
       dust_density: 0
@@ -26,66 +117,246 @@ presets:
       visibility:
         distance: 80000
       wind:
-        at8000:
-          speed: 6
-          dir: 270
         atGround:
           speed: 2
           dir: 270
         at2000:
-          speed: 4
+          speed: 5
           dir: 270
+        at8000:
+          speed: 10
+          dir: 275
       clouds:
-        preset: "Preset1"
-        base: 3000
+        preset: "Preset2"
+        base: 3500
         density: 0
         thickness: 200
         iprecptns: 0
       halo:
         preset: "auto"
 
-  - name: "Winter Overcast"
-    suffix: "winter_overcast"
+  - name: "Summer Night"
+    suffix: "summer_night"
+    date:
+      year: 2000
+      month: 7
+      day: 15
+    time:
+      hour: 1
+      minute: 30
+    weather:
+      name: "Summer, warm night"
+      atmosphere_type: 0
+      groundTurbulence: 0
+      modifiedTime: false
+      type_weather: 0
+      qnh: 761
+      enable_fog: false
+      enable_dust: false
+      dust_density: 0
+      season:
+        temperature: 20
+      fog:
+        visibility: 0
+        thickness: 0
+      visibility:
+        distance: 80000
+      wind:
+        atGround:
+          speed: 1
+          dir: 270
+        at2000:
+          speed: 4
+          dir: 270
+        at8000:
+          speed: 9
+          dir: 275
+      clouds:
+        preset: "Preset1"
+        base: 4000
+        density: 0
+        thickness: 200
+        iprecptns: 0
+      halo:
+        preset: "auto"
+
+  - name: "Autumn Day"
+    suffix: "autumn_day"
+    date:
+      year: 2000
+      month: 10
+      day: 20
+    time:
+      hour: 11
+      minute: 0
+    weather:
+      name: "Autumn, broken clouds"
+      atmosphere_type: 0
+      groundTurbulence: 0
+      modifiedTime: false
+      type_weather: 0
+      qnh: 748
+      enable_fog: false
+      enable_dust: false
+      dust_density: 0
+      season:
+        temperature: 8
+      fog:
+        visibility: 0
+        thickness: 0
+      visibility:
+        distance: 45000
+      wind:
+        atGround:
+          speed: 6
+          dir: 220
+        at2000:
+          speed: 10
+          dir: 225
+        at8000:
+          speed: 20
+          dir: 230
+      clouds:
+        preset: "Preset16"
+        base: 1400
+        density: 6
+        thickness: 500
+        iprecptns: 0
+      halo:
+        preset: "auto"
+
+  - name: "Autumn Night"
+    suffix: "autumn_night"
+    date:
+      year: 2000
+      month: 10
+      day: 20
+    time:
+      hour: 22
+      minute: 0
+    weather:
+      name: "Autumn, overcast night"
+      atmosphere_type: 0
+      groundTurbulence: 0
+      modifiedTime: false
+      type_weather: 0
+      qnh: 746
+      enable_fog: false
+      enable_dust: false
+      dust_density: 0
+      season:
+        temperature: 4
+      fog:
+        visibility: 0
+        thickness: 0
+      visibility:
+        distance: 35000
+      wind:
+        atGround:
+          speed: 7
+          dir: 215
+        at2000:
+          speed: 11
+          dir: 220
+        at8000:
+          speed: 22
+          dir: 225
+      clouds:
+        preset: "Preset21"
+        base: 1000
+        density: 8
+        thickness: 600
+        iprecptns: 0
+      halo:
+        preset: "auto"
+
+  - name: "Winter Day"
+    suffix: "winter_day"
     date:
       year: 2000
       month: 1
       day: 20
     time:
-      hour: 12
-      minute: 30
+      hour: 11
+      minute: 0
     weather:
-      name: "Winter, overcast"
+      name: "Winter, overcast and snow"
       atmosphere_type: 0
       groundTurbulence: 0
       modifiedTime: false
       type_weather: 0
-      qnh: 745
+      qnh: 743
       enable_fog: false
       enable_dust: false
       dust_density: 0
       season:
-        temperature: -5
+        temperature: -4
       fog:
         visibility: 0
         thickness: 0
       visibility:
-        distance: 50000
+        distance: 30000
       wind:
-        at8000:
-          speed: 12
-          dir: 180
         atGround:
           speed: 5
           dir: 180
         at2000:
-          speed: 8
-          dir: 180
+          speed: 9
+          dir: 185
+        at8000:
+          speed: 18
+          dir: 190
       clouds:
         preset: "RainyPreset1"
-        base: 1200
-        density: 7
-        thickness: 400
+        base: 900
+        density: 8
+        thickness: 800
         iprecptns: 1
+      halo:
+        preset: "auto"
+
+  - name: "Winter Night"
+    suffix: "winter_night"
+    date:
+      year: 2000
+      month: 1
+      day: 20
+    time:
+      hour: 2
+      minute: 0
+    weather:
+      name: "Winter, cold clear night"
+      atmosphere_type: 0
+      groundTurbulence: 0
+      modifiedTime: false
+      type_weather: 0
+      qnh: 758
+      enable_fog: false
+      enable_dust: false
+      dust_density: 0
+      season:
+        temperature: -8
+      fog:
+        visibility: 0
+        thickness: 0
+      visibility:
+        distance: 80000
+      wind:
+        atGround:
+          speed: 2
+          dir: 10
+        at2000:
+          speed: 5
+          dir: 15
+        at8000:
+          speed: 12
+          dir: 20
+      clouds:
+        preset: "Preset1"
+        base: 4000
+        density: 0
+        thickness: 200
+        iprecptns: 0
       halo:
         preset: "auto"
 
