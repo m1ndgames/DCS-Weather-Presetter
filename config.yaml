@@ -1,0 +1,90 @@
+presets:
+  - name: "Summer Morning"
+    suffix: "summer_morning"
+    date:
+      year: 2000
+      month: 7
+      day: 15
+    time:
+      hour: 8
+      minute: 0
+    weather:
+      name: "Summer, clear sky"
+      atmosphere_type: 0
+      groundTurbulence: 0
+      modifiedTime: false
+      type_weather: 0
+      qnh: 760
+      enable_fog: false
+      enable_dust: false
+      dust_density: 0
+      season:
+        temperature: 28
+      fog:
+        visibility: 0
+        thickness: 0
+      visibility:
+        distance: 80000
+      wind:
+        at8000:
+          speed: 6
+          dir: 270
+        atGround:
+          speed: 2
+          dir: 270
+        at2000:
+          speed: 4
+          dir: 270
+      clouds:
+        preset: "Preset1"
+        base: 3000
+        density: 0
+        thickness: 200
+        iprecptns: 0
+      halo:
+        preset: "auto"
+
+  - name: "Winter Overcast"
+    suffix: "winter_overcast"
+    date:
+      year: 2000
+      month: 1
+      day: 20
+    time:
+      hour: 12
+      minute: 30
+    weather:
+      name: "Winter, overcast"
+      atmosphere_type: 0
+      groundTurbulence: 0
+      modifiedTime: false
+      type_weather: 0
+      qnh: 745
+      enable_fog: false
+      enable_dust: false
+      dust_density: 0
+      season:
+        temperature: -5
+      fog:
+        visibility: 0
+        thickness: 0
+      visibility:
+        distance: 50000
+      wind:
+        at8000:
+          speed: 12
+          dir: 180
+        atGround:
+          speed: 5
+          dir: 180
+        at2000:
+          speed: 8
+          dir: 180
+      clouds:
+        preset: "RainyPreset1"
+        base: 1200
+        density: 7
+        thickness: 400
+        iprecptns: 1
+      halo:
+        preset: "auto"
